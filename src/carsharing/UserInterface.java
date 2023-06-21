@@ -1,8 +1,6 @@
 package carsharing;
 
-import carsharing.entity.Company;
-import carsharing.entity.CompanyDao;
-import carsharing.entity.CompanyDaoImpl;
+import carsharing.entity.*;
 
 import java.util.List;
 import java.util.Scanner;
@@ -10,11 +8,13 @@ import java.util.Scanner;
 public class UserInterface {
 
     private final Scanner scanner;
-    private CompanyDao companyDao;
+    private final CompanyDao companyDao;
+    private final CarDao carDao;
 
     public UserInterface() {
         this.scanner = new Scanner(System.in);
         this.companyDao = new CompanyDaoImpl();
+        this.carDao = new CarDaoImpl();
     }
 
     public void start() {
@@ -65,8 +65,55 @@ public class UserInterface {
             System.out.println();
             return;
         }
-        System.out.println("Company list:");
-        companies.forEach(System.out::println);
+        int index = -1;
+
+        while(index != 0) {
+            System.out.println("Choose the company:");
+            companies.forEach(System.out::println);
+            System.out.println("0. Back");
+            index = scanner.nextInt();
+            scanner.nextLine();
+
+            if (index <= companies.size() && index > 0) {
+                carMenu(companies.get(index - 1));
+                break;
+            }
+        }
+    }
+
+    private void carMenu(Company company) {
+        String input = "";
+        System.out.println("'" +company.getName()+ "' company");
+
+        while(!input.equals("0")){
+            System.out.println("1. Car list");
+            System.out.println("2. Create a car");
+            System.out.println("0. Back");
+
+            input = scanner.nextLine();
+            if (input.equals("1")) showCars(company);
+            if (input.equals("2")) createCar(company);
+        }
+    }
+
+    private void showCars(Company company) {
+        List<Car> cars = carDao.getAllCarsByCompanyId(company.getId());
+        if (cars.isEmpty()) {
+            System.out.println("The car list is empty!");
+            System.out.println();
+        } else {
+            for(int i = 0; i < cars.size(); i++){
+                System.out.println(i+1+". "+cars.get(i).getName());
+            }
+            System.out.println();
+        }
+    }
+
+    private void createCar(Company company) {
+        System.out.println("Enter the car name:");
+        String name = scanner.nextLine();
+        carDao.addCar(new Car(0,name, company.getId()));
+        System.out.println("The car was added!");
         System.out.println();
     }
 }

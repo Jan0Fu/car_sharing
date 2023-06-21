@@ -41,11 +41,19 @@ public class DbConnection {
 
     public static void createTables() {
         try (Statement statement = getConnection().createStatement()) {
-            String sql = "DROP TABLE IF EXISTS COMPANY; " +
+            String sql = "DROP TABLE IF EXISTS CAR; " +
+                    "DROP TABLE IF EXISTS COMPANY; " +
                     "CREATE TABLE IF NOT EXISTS COMPANY (" +
                     "ID INTEGER not NULL AUTO_INCREMENT, " +
                     "NAME VARCHAR(255) not NULL UNIQUE, " +
                     " PRIMARY KEY ( ID )" +
+                    ");" +
+                    "CREATE TABLE IF NOT EXISTS CAR (" +
+                    "ID INTEGER not NULL AUTO_INCREMENT, " +
+                    "NAME VARCHAR(255) not NULL UNIQUE, " +
+                    "COMPANY_ID INTEGER not NULL, " +
+                    "PRIMARY KEY ( ID ), " +
+                    "FOREIGN KEY (COMPANY_ID) REFERENCES COMPANY(ID)" +
                     ");";
 
             statement.executeUpdate(sql);
